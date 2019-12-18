@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# * Functions
+
 function generateDelayRequest() { # Return the request for a delayed call, input parameters are message, mins, key
     REQUEST="https://script.google.com/macros/s/AKfycbx0hWSQlfMuJ47xgYqHO5O2fAfRXb5p8e66in8A7mmFmHpEATU/exec?action=$1&mins=$2&key=$3"
 }
@@ -21,6 +23,14 @@ function checkKey() {
     fi
 }
 
+function brecho() { # Bold Red echo
+    echo -e "${F_BOLD}${C_RED}$1${C_NO_COLOR}"
+}
+
+function gecho() { # Green echo
+    echo -e "${C_GREEN}$1${C_NO_COLOR}"
+}
+
 function makeWebRequest() { # Make the web request
     FILENAME="$HOME/.webhook/requestResult"
 
@@ -35,6 +45,8 @@ function makeWebRequest() { # Make the web request
     echo $requestResult
     exit 0
 }
+
+# * Script
 
 if [ -z "$1" ]; then # Check if the DEVICE parameter exist
     brecho "No DEVICE provided"
