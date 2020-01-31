@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+# * Variables
+
+WEBHOOK_FOLDER_NAME=".webhook"
+WEBHOOK_FOLDER=$HOME/$WEBHOOK_FOLDER_NAME
+DEVICES_FILE=$WEBHOOK_FOLDER/devices
+CONFIG_FILE=$WEBHOOK_FOLDER/config
+
 # * Functions
 
 function generateDelayRequest() { # Return the request for a delayed call, input parameters are message, mins, key
@@ -15,7 +22,7 @@ function generateMessage() {
 }
 
 function checkKey() {
-    source $HOME/.webhook/config # Sourcing the key file
+    source $CONFIG_FILE # Sourcing the key file
     if [ -z "$KEY" ]; then # Check if the KEY parameter exist
         brecho "No KEY configured in the configuration file"
         echo "Write your KEY as a bash variable inside" $HOME"/.webhook/config"
@@ -32,7 +39,7 @@ function gecho() { # Green echo
 }
 
 function makeWebRequest() { # Make the web request
-    FILENAME="$HOME/.webhook/requestResult"
+    FILENAME="$WEBHOOK_FOLDER/requestResult"
 
     wget -O $FILENAME $REQUEST >/dev/null 2>&1 # Make web request and suppress output
     requestResult=$(cat $FILENAME)             # Print request result on a variable
