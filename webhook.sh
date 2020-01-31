@@ -22,11 +22,17 @@ function generateMessage() {
 }
 
 function checkKey() {
-    source $CONFIG_FILE # Sourcing the key file
+    if [ ! -f "$CONFIG_FILE" ]; then
+        brecho "Config file doesn't exist!"
+        echo "Create the file" $CONFIG_FILE "with the KEY variable"
+        exit 3
+    fi
+
+    source $CONFIG_FILE    # Sourcing the key file
     if [ -z "$KEY" ]; then # Check if the KEY parameter exist
         brecho "No KEY configured in the configuration file"
-        echo "Write your KEY as a bash variable inside" $HOME"/.webhook/config"
-        exit 3
+        echo "Write your KEY as a bash variable inside" $CONFIG_FILE
+        exit 4
     fi
 }
 
@@ -47,7 +53,7 @@ function makeWebRequest() { # Make the web request
 
     if [ -z "$requestResult" ]; then # if request result it's empty
         brecho "ERROR firing the event: Invalid KEY"
-        exit 4
+        exit 5
     fi
     echo $requestResult
     exit 0
