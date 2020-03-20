@@ -11,7 +11,7 @@ DEVICES_FILE=$WEBHOOK_FOLDER/devices
 if [ ! -f "$DEVICES_FILE" ]; then # If devices file doesn't exist
     brecho "Devices file doesn't exist!"
     echo "Create the file" $DEVICES_FILE "with the DEVICES variable"
-    exit 1
+    return 1
 fi
 
 source $DEVICES_FILE # LOAD devices
@@ -21,7 +21,7 @@ if [ -z "$DEVICES" ]; then # If variable it's empty
     echo "Write your DEVICES as a bash variable inside" $DEVICES_FILE
     echo "E.G."
     echo "DEVICES=\"smartDevice smartLamp smartPlug\""
-    exit 2
+    return 2
 fi
 
 complete -W "$DEVICES" webhook # Run command for autocomplete
