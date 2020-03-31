@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 # * Variables
 
@@ -8,53 +8,56 @@ CONFIG_FILE=$WEBHOOK_FOLDER/config
 
 # * Functions
 
-function generateDelayRequest() { # Return the request for a delayed call, input parameters are message, mins, key
+generateDelayRequest() { # Return the request for a delayed call, input parameters are message, mins, key
     REQUEST="https://script.google.com/macros/s/AKfycbx0hWSQlfMuJ47xgYqHO5O2fAfRXb5p8e66in8A7mmFmHpEATU/exec?action=$1&mins=$2&key=$3"
 }
 
-function generateRequest() {
+generateRequest() {
     REQUEST="https://maker.ifttt.com/trigger/$1/with/key/$2"
 }
 
-function generateMessage() {
+generateMessage() {
     MESSAGE="turn_$1_$2"
 }
 
-function checkKey() {
+checkKey() {
     if [ ! -f "$CONFIG_FILE" ]; then
         brecho "Config file doesn't exist!"
-        echo "Create the file" $CONFIG_FILE "with the KEY variable"
+        echo "Create the file $CONFIG_FILE with the KEY variable"
         exit 3
     fi
 
-    source $CONFIG_FILE    # Sourcing the key file
+    # shellcheck disable=SC1090
+    . "$CONFIG_FILE"       # Sourcing the key file
     if [ -z "$KEY" ]; then # Check if the KEY parameter exist
         brecho "No KEY configured in the configuration file"
-        echo "Write your KEY as a bash variable inside" $CONFIG_FILE
+        echo "Write your KEY as a bash variable inside $CONFIG_FILE"
         exit 4
     fi
 }
 
-function brecho() { # Bold Red echo
-    echo -e "${F_BOLD}${C_RED}$1${C_NO_COLOR}"
+brecho() { # Bold Red echo
+    # shellcheck disable=SC2059
+    printf "${F_BOLD}${C_RED}$1${C_NO_COLOR}\n"
 }
 
-function gecho() { # Green echo
-    echo -e "${C_GREEN}$1${C_NO_COLOR}"
+gecho() { # Green echo
+    # shellcheck disable=SC2059
+    printf "${C_GREEN}$1${C_NO_COLOR}\n"
 }
 
-function makeWebRequest() { # Make the web request
+makeWebRequest() { # Make the web request
     FILENAME="$WEBHOOK_FOLDER/requestResult"
 
-    wget -O $FILENAME $REQUEST >/dev/null 2>&1 # Make web request and suppress output
-    requestResult=$(cat $FILENAME)             # Print request result on a variable
-    rm $FILENAME                               # Remove request result
+    wget -O "$FILENAME" "$REQUEST" >/dev/null 2>&1 # Make web request and suppress output
+    requestResult=$(cat "$FILENAME")               # Print request result on a variable
+    rm "$FILENAME"                                 # Remove request result
 
     if [ -z "$requestResult" ]; then # if request result it's empty
         brecho "ERROR firing the event: Invalid KEY"
         exit 5
     fi
-    echo $requestResult
+    echo "$requestResult"
     exit 0
 }
 
@@ -83,12 +86,12 @@ else
     echo "Valid values are: 0 ; 1"
     exit 1
 fi
-generateMessage $COMMAND $DEVICE
+generateMessage $COMMAND "$DEVICE"
 
 if [ -z "$3" ]; then # Check if delay parameter exist
-    generateRequest $MESSAGE $KEY
+    generateRequest "$MESSAGE" "$KEY"
 else
-    generateDelayRequest $MESSAGE $3 $KEY
+    generateDelayRequest "$MESSAGE" "$3" "$KEY"
 fi
 
 gecho "Turning $COMMAND $DEVICE with key $KEY"
